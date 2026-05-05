@@ -1,34 +1,57 @@
 name: Build Tweak
 
 on:
-push:
-branches: [main]
-workflow_dispatch:
 
-jobs:build:runs-on: macos-latest
+  push:
 
-steps:
-  - name: Checkout
-    uses: actions/checkout@v4
+    branches: [ main ]
 
-  - name: Setup Theos
-    run: |
-      git clone --recursive https://github.com/theos/theos.git $HOME/theos
-      echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+  workflow_dispatch:
 
-  - name: Install Dependencies
-    run: |
-      brew install ldid dpkg make perl
-      sudo cpan -T install Data::UUID
+jobs:
 
-  - name: Build Package
-    run: |
-      export THEOS=$HOME/theos
-      export PATH=$THEOS/bin:$PATH
-      make clean package FINALPACKAGE=1
+  build:
 
-  - name: Upload DEB
-    uses: actions/upload-artifact@v4
-    with:
-      name: package
-      path: packages/*.deb
+    runs-on: macos-latest
+
+    steps:
+
+      - name: Checkout
+
+        uses: actions/checkout@v4
+
+      - name: Setup Theos
+
+        run: |
+
+          git clone --recursive https://github.com/theos/theos.git $HOME/theos
+
+          echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+
+      - name: Install Dependencies
+
+        run: |
+
+          brew install ldid dpkg make perl
+
+          sudo cpan -T install Data::UUID
+
+      - name: Build Package
+
+        run: |
+
+          export THEOS=$HOME/theos
+
+          export PATH=$THEOS/bin:$PATH
+
+          make clean package FINALPACKAGE=1
+
+      - name: Upload DEB
+
+        uses: actions/upload-artifact@v4
+
+        with:
+
+          name: package
+
+          path: packages/*.deb
